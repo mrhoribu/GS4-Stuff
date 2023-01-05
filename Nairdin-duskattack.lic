@@ -1,0 +1,18 @@
+GameObj.npcs.each { |npc| status !~ /dead|gone/
+	while npc.name =~ /automaton|champion/ and !(npc.status =~ /dead|gone/)
+		multifput "aim chest", "sym sleep", "beseech sledge", "qstr 6 mstr target", "ambush", "ambush" if checkrt == 0 and checkcastrt == 0
+		pause 0.25
+	end
+	while (npc.name =~ /yeti|mammoth|grahnk|/ and !(npc.status =~ /lying down|stunned|sleeping/) and !(npc.status =~ /dead|gone/)) do
+		multifput "aim head", "sym sleep", "ambush" if checkrt == 0 and checkcastrt == 0
+		pause 0.25
+	end
+	while (npc.name =~ /lion|lizard|wildling|dobrem|servant|marauder|slaver|ursian|witch|seeker|crab|burghee|beetle|ranger/ and !(npc.status =~ /lying down|stunned|sleeping/) and !(npc.status =~ /dead|gone/)) do
+		multifput "aim head", "ambush" if checkrt == 0 and checkcastrt == 0
+		pause 0.25
+	end
+	while (npc.name =~ /yeti|mammoth|grahnk|lion|lizard|wildling|dobrem|servant|marauder|slaver|ursian|witch|seeker|crab|burghee|beetle/ and (npc.status =~ /lying down|stunned|sleeping/) and !(npc.status =~ /dead|gone/)) do
+		multifput "aim head", "ambush" if checkrt == 0 and checkcastrt == 0
+		pause 0.25
+	end
+}

@@ -1,0 +1,94 @@
+=begin
+    Sample ;tdusk custom attack routine
+    To be used with ;tdusk and the following setting for it:
+
+    ;e echo UserVars.tdusk[:attack_script] = true
+
+    Will need to rename script to:
+        <YOUR_CHAR_NAME>-duskattack.lic
+
+    See ;tdusk help
+    For additional setup/help info.
+
+       todo: unsure
+     author: Tysong (horibu on PC), original Nylis
+       name: Tysong-duskattack
+       tags: duskruin, arena, dusk ruin, tdusk
+    version: 1.3
+
+    changelog:
+        1.3 (2021-02-12)
+             Slight change of routine
+        1.2 (2021-02-12)
+             Updated to have better logic for groups
+        1.1 (2020-08-25)
+             Slight changes with some updates for myself
+        1.0 (2019-08-06)
+             Sample upload of a custom routine
+=end
+
+silence_me
+
+if Array[5,10,15,20,25].include?(UserVars.tdusk[:wave_number]) && Spell[909].active?
+    put "tap" if (GameObj.targets.count > 1 || GameObj.pcs.nil?) && Room.current.id == 24550
+else
+    fput "symbol of sleep" if Society.status == "Order of Voln" && (GameObj.targets.count > 1 || GameObj.pcs.nil?) && Room.current.id == 24550
+    #fput "incant 410" if (GameObj.targets.count > 1 || GameObj.pcs.nil?) && Room.current.id == 24550
+end
+
+#Spell[525].cast if UserVars.tdusk[:wave_number] == 1 && Room.current.id == 24550
+
+if GameObj.pcs.any?{|pc| Array["Deza", "Rasko"].include?(pc.noun) } && Spell[515].affordable?
+    waitcastrt?
+    Spell[515].cast("Deza") if Array[2].include?(UserVars.tdusk[:wave_number])
+    Spell[515].cast("Rasko") if Array[13].include?(UserVars.tdusk[:wave_number])
+end
+
+if (mana?(100) && ((Array[5,10,15,20,25].include?(UserVars.tdusk[:wave_number]) && GameObj.targets.count > 1) || (Array[25].include?(UserVars.tdusk[:wave_number]))))
+    sleep(0.1)
+    waitrt?
+    waitcastrt?
+    fput "stance offensive" if stance != "offensive"
+    fput "incant 950 910 910 910 910 910 910" if mana?(100) && Room.current.id == 24550
+end
+
+while GameObj.targets.any?{|npc| npc.status !~ /dead|gone/} && !dead?
+GameObj.targets
+ .reject {|foe| foe.status =~ /dead|gone/ }
+ .sample
+ .tap { |npc|
+
+    #start main attack routine here
+  put "target ##{npc.id}" if npc.status !~ /dead|gone/
+  waitrt? if npc.status !~ /dead|gone/
+  waitcastrt? if npc.status !~ /dead|gone/
+  fput "incant 917 fire" if (Spell[917].affordable?) && npc.name !~ /crimson|fire/ && npc.status !~ /dead|gone/ && GameObj.pcs.nil? && Room.current.id == 24550
+  fput "incant 917 cold" if (Spell[917].affordable?) && npc.name =~ /crimson|fire/ && npc.status !~ /dead|gone/ && GameObj.pcs.nil? && Room.current.id == 24550
+  while npc.status !~ /dead|gone/ && !dead? && Room.current.id == 24550
+    if Wounds.nerves > 1 || Scars.nerves > 1
+      sleep(0.25)
+      next
+    end
+    if Spell[515].affordable? && !Spell[599].active? && !Spell[597].active? && !Spell[515].active? && checkrt == 0 && checkcastrt == 0 && Room.current.id == 24550
+      fput "incant 515"
+    end
+    if Spell[518].affordable? && GameObj.targets.count{|npc| npc.status !~ /dead|gone/} > 1 && checkrt == 0 && checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
+      fput "stance offensive" if stance != "offensive"
+      fput "incant 518 lightning"
+    elsif Spell[903].affordable? && npc.name =~ /crimson|fire/ && npc.status !~ /dead|gone/ && checkrt == 0 && checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
+      fput "stance offensive" if stance != "offensive"
+      fput "incant 903 cast"
+    elsif Spell[904].affordable? && npc.name !~ /crimson|fire|troll/ && npc.status !~ /dead|gone/ && checkrt == 0 && checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
+      fput "stance offensive" if stance != "offensive"
+      fput "incant 904"
+    elsif Spell[906].affordable? && npc.name !~ /crimson|fire/ && npc.name =~ /troll/ && npc.status !~ /dead|gone/ && checkrt == 0 && checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
+      put "stance offensive" if stance != "offensive"
+      fput "incant 906"
+    end
+    sleep(0.1)
+  end
+    #end main attack routine here
+}
+end
+#Script.start("foreach", "n=/^((?!arrow|pill).)*$/ in room; look item") if UserVars.tdusk[:wave_number] != 25 && !GameObj.loot.nil?
+fput "loot room" if GameObj.loot

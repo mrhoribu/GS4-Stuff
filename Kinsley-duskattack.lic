@@ -1,0 +1,35 @@
+while GameObj.targets.any?{|npc| npc.status !~ /dead|gone/} && !dead?
+GameObj.targets
+ .reject {|foe| foe.status =~ /dead|gone/ }
+ .sample
+ .tap { |npc|
+
+    #start main attack routine here
+    sleep(0.5)
+    waitrt? if npc.status !~ /dead|gone/
+    waitcastrt? if npc.status !~ /dead|gone/
+    Spell[240].cast if Spell[240].affordable? && !Spell[240].active? && Room.current.id == 24550
+    waitrt? if npc.status !~ /dead|gone/
+    waitcastrt? if npc.status !~ /dead|gone/
+    while npc.status !~ /dead|gone/ && !dead? && Room.current.id == 24550
+        if checkrt == 0 && checkcastrt == 0 && npc.status !~ /dead|gone/
+            if !Spell[240].affordable? && !Spell[240].active? && checkspirit >= 6 && Society.status == "Council of Light" && Room.current.id == 24550
+                Spell[9918].cast
+            elsif Spell[240].affordable? && !Spell[240].active? && Room.current.id == 24550
+                Spell[240].cast
+            elsif !Spell[302].affordable? && npc.name !~ /champion|automaton/ && checkspirit >= 6 && Society.status == "Council of Light" && Room.current.id == 24550
+                Spell[9918].cast
+            elsif Spell[302].affordable? && npc.name !~ /champion|automaton/ && Room.current.id == 24550
+                Spell[302].cast
+            elsif !Spell[317].affordable? && npc.name =~ /champion|automaton/ && checkspirit >= 6 && Society.status == "Council of Light" && Room.current.id == 24550
+                Spell[9918].cast
+            elsif Spell[317].affordable? && npc.name =~ /champion|automaton/ && Room.current.id == 24550
+                Spell[317].cast
+
+            end
+        end
+        pause 0.25 if npc.status !~ /dead|gone/
+    end
+    #end main attack routine here
+}
+end

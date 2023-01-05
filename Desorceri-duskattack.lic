@@ -1,0 +1,22 @@
+GameObj.targets.each { |npc|
+	put "target ##{npc.id}" if !(npc.status =~ /dead|gone/)
+	if npc.name !~ /automaton/ && !(npc.status =~ /dead|gone/) && GameObj.npcs && Room.current.id == 24550
+		waitrt?
+		waitcastrt?
+		Spell[9918].cast if (!(Spell[717].affordable?) && checkspirit >= 6 )
+		waitrt?
+		waitcastrt?
+		fput "incant 717" if (Spell[717].affordable?)
+		waitrt? if npc.status !~ /dead|gone/
+		waitcastrt? if npc.status !~ /dead|gone/
+		fput "incant 720" if (Spell[720].affordable?) if npc.status !~ /dead|gone/
+	end
+	sleep(0.1) if npc.status !~ /dead|gone/
+	while (!(npc.status =~ /dead|gone/) && GameObj.npcs && Room.current.id == 24550) do
+		fput "sign of wracking" if (checkmana < 20 && checkspirit >= 6 )
+		multifput "incant 711" if Spell[711].affordable? && !(npc.status =~ /dead|gone/) && checkrt == 0 && checkcastrt == 0
+		sleep(0.1)
+	end
+	Script.start("foreach", "in room; look item") if UserVars.tdusk[:wave_number] != 25 && !GameObj.loot.nil?
+	Script.start("foreach", "in room; get item; stow item") if UserVars.tdusk[:wave_number] == 25 && !GameObj.loot.nil?
+}

@@ -1,0 +1,33 @@
+silence_me
+
+while GameObj.targets.any?{|npc| npc.status !~ /dead|gone/} && !dead?
+GameObj.targets
+ .reject {|foe| foe.status =~ /dead|gone/ }
+ .sample
+ .tap { |npc|
+ 
+	#start main attack routine here
+  waitrt? if npc.status !~ /dead|gone/
+  waitcastrt? if npc.status !~ /dead|gone/
+  if npc.name =~ /automaton|champion/ && npc.status !~ /dead|gone/ && Room.current.id == 24550
+    fput "renew 1015" if Spell[1015].affordable?
+  end
+  fput "incant 1002" if Spell[1002].affordable? && npc.noun =~ /champion|marauder|slaver|shaman|troll|witch|servant|seeker|grahnk|ranger|wildling/ && Room.current.id == 24550
+  waitrt? if npc.status !~ /dead|gone/
+  waitcastrt? if npc.status !~ /dead|gone/
+  while npc.status !~ /dead|gone/ && !dead? && Room.current.id == 24550
+    fput "symbol of mana" if checkmana <= 40 && checkrt == 0 && checkcastrt == 0
+    if Spell[1030].affordable? && npc.status !~ /dead|gone/ && checkrt == 0 && checkcastrt == 0 && Room.current.id == 24550 && npc.name =~ /automaton|champion/
+      fput "incant 1030" 
+    elsif npc.status !~ /dead|gone/ && checkrt == 0 && checkcastrt == 0 && Room.current.id == 24550 && npc.name !~ /automaton|champion/
+      Spell[1035].cast if !Spell[1035].active? && Spell[1035].affordable?
+      fput "attack"
+    end
+    sleep 0.5
+  end
+  #end main attack routine here    
+}
+end
+
+waitcastrt? if UserVars.tdusk[:wave_number] == 25 && !dead?
+put "renew all" if UserVars.tdusk[:wave_number] == 25 && !dead?

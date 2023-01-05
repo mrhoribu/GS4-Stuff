@@ -1,0 +1,58 @@
+cast950 = false
+GameObj.targets.shuffle.each { |npc|
+	put "target ##{npc.id}" if !(npc.status =~ /dead|gone/)
+	waitrt? if !(npc.status =~ /dead|gone/)
+	waitcastrt? if !(npc.status =~ /dead|gone/)
+	fput "incant 917 fire" if (Spell[917].affordable?) and npc.name !~ /crimson|fire/ and !(npc.status =~ /dead|gone/) && Room.current.id == 24550 && GameObj.pcs.nil?
+	fput "incant 917 cold" if (Spell[917].affordable?) and npc.name =~ /crimson|fire/ and !(npc.status =~ /dead|gone/) && Room.current.id == 24550 && GameObj.pcs.nil?
+
+	#GROUP 950 ROUTINE
+	if !GameObj.pcs.nil?
+		if (checkmana >= 100 and (Array[15,25].include? UserVars.tdusk[:wave_number]))
+			sleep(0.1)
+			waitrt? if !(npc.status =~ /dead|gone/)
+			waitcastrt? if !(npc.status =~ /dead|gone/)
+			put "stance offensive"
+			Spell[950].cast('910 910 910 910 910 910') if checkmana >= 100 && Room.current.id == 24550 && cast950 == false
+			cast950 = true
+			put "stance defensive"
+		end
+		
+	#SOLO 950 ROUTINE
+	else
+ 		if (checkmana >= 100 and (Array[5,10,20,25].include? UserVars.tdusk[:wave_number]))
+			sleep(0.1)
+			waitrt? if !(npc.status =~ /dead|gone/)
+			waitcastrt? if !(npc.status =~ /dead|gone/)
+			put "stance offensive"
+			Spell[950].cast('910 910 910 910 910 910') if checkmana >= 100 && Room.current.id == 24550
+			put "stance defensive"
+		end
+	end
+	
+	#GROUP & SOLO BOLT TILL DEAD
+	while !(npc.status =~ /dead|gone/) && !dead? && Room.current.id == 24550
+		if Spell[515].affordable? and !Spell[599].active? and !Spell[597].active? and !Spell[515].active? and checkrt == 0 and checkcastrt == 0 && Room.current.id == 24550
+			fput "incant 515"
+		end
+		if Spell[903].affordable? and npc.name =~ /crimson|fire/ and !(npc.status =~ /dead|gone/) and checkrt == 0 and checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
+			put "stance offensive"
+			fput "incant 903 cast"
+			fput "stance defensive"
+		end
+		if Spell[903].affordable? and !(npc.name =~ /crimson|fire|troll/) and !(npc.status =~ /dead|gone/) and checkrt == 0 and checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
+			put "stance offensive"
+			#fput "incant 903 evoke"
+			fput "incant 904"
+			fput "stance defensive"
+		end
+		if Spell[906].affordable? and !(npc.name =~ /crimson|fire/) and npc.name =~ /troll/ and !(npc.status =~ /dead|gone/) and checkrt == 0 and checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 4550
+			put "stance offensive"
+			fput "incant 906"
+			fput "stance defensive"
+		end
+		sleep(0.1)
+	end
+}
+Script.start("foreach", "in room; look item") if UserVars.tdusk[:wave_number] != 25
+Script.start("foreach", "in room; get item; stow item") if UserVars.tdusk[:wave_number] == 25

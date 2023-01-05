@@ -1,0 +1,33 @@
+silence_me
+
+fput "sign wracking" if checkmana <= 30 && checkspirit >= 6 && checkrt == 0 && checkcastrt == 0 && Room.current.id == 24550
+fput "incant 410" if Spell[410].affordable? && checkrt == 0 && checkcastrt == 0 && Room.current.id == 24550 && !GameObj.targets.empty?
+
+while GameObj.targets.any?{|npc| npc.status !~ /dead|gone/} && !dead?
+GameObj.targets
+ .reject {|foe| foe.status =~ /dead|gone/ }
+ .sample
+ .tap { |npc|
+  
+  put "target ##{npc.id}" if !(npc.status =~ /dead|gone/)
+  while !(npc.status =~ /dead|gone/) && Room.current.id == 24550
+    waitrt?
+    waitcastrt?
+    if checkrt == 0 && checkcastrt == 0 && Room.current.id == 24550
+      if checkmana <= 30 && checkspirit >= 6
+        fput "sign wracking"
+      elsif Spell[515].affordable? && !Spell[599].active? && !Spell[597].active? && !Spell[515].active?
+        fput "incant 515"
+      elsif Spell[410].affordable? && GameObj.targets.any?{|t| t.status !~ /stunned|prone|lying down/} 
+        fput "incant 410"
+      elsif Spell[518].affordable? && GameObj.targets.count > 1
+        multifput "stance offensive", "incant 518 lightning", "stance defensive"
+      elsif Spell[910].affordable? && GameObj.targets.count < 2
+        multifput "stance offensive", "incant 910", "stance defensive"
+      end
+    end
+  end
+  sleep(0.25)
+  
+}
+end
