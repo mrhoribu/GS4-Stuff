@@ -1,11 +1,11 @@
+silence_me
+
 if Array[5,10,15,20,25].include?(UserVars.tdusk[:wave_number]) && Spell[909].active?
     put "tap" if (GameObj.targets.count > 1 || GameObj.pcs.nil?) && Room.current.id == 24550
 else
     fput "symbol of sleep" if Society.status == "Order of Voln" && (GameObj.targets.count > 1 || GameObj.pcs.nil?) && Room.current.id == 24550
     #fput "incant 410" if (GameObj.targets.count > 1 || GameObj.pcs.nil?) && Room.current.id == 24550
 end
-
-#Spell[525].cast if UserVars.tdusk[:wave_number] == 1 && Room.current.id == 24550
 
 if GameObj.pcs.any?{|pc| Array["Deza", "Rasko"].include?(pc.noun) } && Spell[515].affordable?
     waitcastrt?
@@ -23,7 +23,7 @@ end
 
 while GameObj.targets.any?{|npc| npc.status !~ /dead|gone/} && !dead?
 GameObj.targets
- .reject {|foe| foe.status =~ /dead|gone/ }
+ .reject {|foe| (foe.status =~ /dead|gone/ || foe.name =~ /^animated /)}
  .sample
  .tap { |npc|
 
@@ -49,7 +49,7 @@ GameObj.targets
       fput "incant 903 cast"
     elsif Spell[904].affordable? && npc.name !~ /crimson|fire|troll/ && npc.status !~ /dead|gone/ && checkrt == 0 && checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
       fput "stance offensive" if stance != "offensive"
-      fput "incant 904"
+      fput "incant 903 evoke"
     elsif Spell[906].affordable? && npc.name !~ /crimson|fire/ && npc.name =~ /troll/ && npc.status !~ /dead|gone/ && checkrt == 0 && checkcastrt == 0 && UserVars.tdusk[:high_ds] == false && Room.current.id == 24550
       put "stance offensive" if stance != "offensive"
       fput "incant 906"
@@ -59,5 +59,4 @@ GameObj.targets
     #end main attack routine here
 }
 end
-#Script.start("foreach", "n=/^((?!arrow|pill).)*$/ in room; look item") if UserVars.tdusk[:wave_number] != 25 && !GameObj.loot.nil?
 fput "loot room" if GameObj.loot
