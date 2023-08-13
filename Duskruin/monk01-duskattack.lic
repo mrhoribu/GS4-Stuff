@@ -1,0 +1,27 @@
+if GameObj.targets.length > 1 && [5, 10, 15, 20, 25].include?(UserVars.tdusk[:wave_number]) && checkmana(40)
+  fput 'incant 110'
+end
+
+while GameObj.targets.any? { |npc| npc.status !~ /dead|gone/ } && !dead?
+GameObj.targets
+ .reject { |foe| (foe.status =~ /dead|gone/ || foe.name =~ /^animated /)}
+ .sample
+ .tap { |npc|
+  put "target ##{npc.id}" unless npc.status =~ /dead|gone/
+  while npc.status !~ /dead|gone/ && !dead? && Room.current.id == 24550
+    if checkrt == 0
+      fput('stance offensive') unless checkstance('offensive')
+      fput('stand') unless standing?
+      if Effects::Cooldowns.active?('Flurry') && Effects::Cooldowns.active?('Whirling Blade')
+        put('attack neck')
+        fput('attack')
+      elsif checkstamina(40) && !Effects::Cooldowns.active?('Whirling Blade')
+        fput('weapon wblade')
+      elsif checkstamina(40) && !Effects::Cooldowns.active?('Flurry')
+        fput('weapon flurry')
+      end
+    end
+    sleep(0.25)
+  end
+}
+end
