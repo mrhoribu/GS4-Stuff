@@ -1,0 +1,31 @@
+silence_me
+
+while GameObj.targets.any? { |npc| npc.status !~ /dead|gone/ } && !dead?
+  GameObj.targets
+         .reject { |foe| (foe.status =~ /dead|gone/ || foe.name =~ /^animated /) }
+         .sample
+         .tap do |npc|
+    # start main attack routine here
+    put "target ##{npc.id}" if npc.status !~ /dead|gone/
+    waitrt? if npc.status !~ /dead|gone/
+    waitcastrt? if npc.status !~ /dead|gone/
+    if checkstamina >= 60 && npc.name =~ /champion/ && Room.current.id == 24550
+      waitrt?
+      waitcastrt?
+      put "mstrike"
+      waitrt?
+    end
+    while npc.status !~ /dead|gone/ && !dead? && Room.current.id == 24550
+      if checkrt == 0 && checkcastrt == 0
+        if checkstamina >= 60
+          put "mstrike target"
+        else
+          put "ambush"
+          put "attack"
+        end
+        sleep 0.1
+      end
+    end
+    # end main attack routine here
+  end
+end
