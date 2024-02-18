@@ -1,0 +1,19 @@
+while GameObj.targets.any? { |npc| npc.status !~ /dead|gone/ } && !dead?
+  GameObj.targets
+         .reject { |foe| (foe.status =~ /dead|gone/ || foe.name =~ /^animated /) }
+         .sample
+         .tap do |npc|
+    # start main attack routine here
+    put "target ##{npc.id}" if npc.status !~ /dead|gone/
+    while npc.status !~ /dead|gone/ && Room.current.id == 24550
+      fput "berserk" if !(Spell[9607].active?) && checkstamina >= 10 && checkrt == 0 && checkcastrt == 0 && Room.current.id == 24550
+      if checkstamina < 10 && UserVars.tdusk[:praycurrent] < 3
+        put "PRAY"
+        UserVars.tdusk[:praycurrent] += 1
+        sleep 0.1 until (checkstamina >= 10)
+      end
+      sleep 0.1
+    end
+    # end main attack routine here
+  end
+end
